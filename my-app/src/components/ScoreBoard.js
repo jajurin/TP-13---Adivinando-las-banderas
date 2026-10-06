@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, StyleSheet } from "react-native";
-import { useGame } from "./GameContext";
+import { useGame } from "./GameProvider"; 
 
 export default function ScoreBoard() {
   const { puntaje } = useGame();

@@ -1,19 +1,27 @@
 import React from "react";
 import { Image } from "react-native";
-import { SvgUri } from "react-native-svg";
-import { useGame } from "./GameContext";
+import { useGame } from "./GameProvider";
+
+
+//para mostar la imaguen
+const aPng = (url) => {
+  const limpia = url.trim();
+  if (!limpia.endsWith(".svg")) return limpia;
+  const archivo = limpia.split("/").pop();
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${archivo}?width=640`;
+};
 
 export default function Flag() {
   const { paisActual } = useGame();
 
   if (!paisActual) return null;
+  console.log("URL:", aPng(paisActual.flag));
 
-  const uri = paisActual.flag;
-//esto de abajo para pasarlo a imaguen por que es url.
-  if (uri.toLowerCase().endsWith(".svg")) {
-    return <SvgUri uri={uri} width={280} height={180} />; 
-  }
   return (
-    <Image source={{ uri }} style={{ width: 280, height: 180 }} resizeMode="contain" />
+    <Image
+      source={{ uri: aPng(paisActual.flag) }}
+      style={{ width: 280, height: 180 }}
+      resizeMode="contain"
+    />
   );
 }

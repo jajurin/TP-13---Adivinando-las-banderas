@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 const API_URL = "https://countriesnow.space/api/v0.1/countries/flag/images";
+const TIEMPO = 15;
 
 const GameContext = createContext(null);
 
@@ -10,14 +11,13 @@ const elegirAlAzar = (lista) => lista[Math.floor(Math.random() * lista.length)];
 
 export function GameProvider({ children }) {
   const [paises, setPaises] = useState([]);
-  const [paisActual, setPaisActual] = useState(null); 
+  const [paisActual, setPaisActual] = useState(null);
   const [puntaje, setPuntaje] = useState(0);
   const [jugadores, setJugadores] = useState([]);
-  const [timer, setTimer] = useState(0);
+  const [timer, setTimer] = useState(TIEMPO);
   const [pistas, setPistas] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
 
   useEffect(() => {
     const cargarPaises = async () => {
@@ -30,6 +30,7 @@ export function GameProvider({ children }) {
 
         setPaises(lista);
         setPaisActual(elegirAlAzar(lista));
+        setTimer(TIEMPO);
       } catch (err) {
         console.error("Error cargando países:", err);
         setError("No pudimos cargar los países. Revisá tu conexión.");
@@ -41,13 +42,29 @@ export function GameProvider({ children }) {
     cargarPaises();
   }, []);
 
+  const siguientePais = () => {
+    setPaisActual(elegirAlAzar(paises));
+    setTimer(TIEMPO);
+  };
+
+
+  useEffect(() => {
+    if (!paisActual) return;
+    const id = setInterval(() => setTimer((t) => t - 1), 1000);
+    return () => clearInterval(id);
+  }, [paisActual]);
+
+
+  useEffect(() => {
+    if (paisActual && timer <= 0) siguientePais();
+  }, [timer]);
 
   const adivinar = (respuesta) => {
     if (!paisActual) return false;
 
     if (normalizar(respuesta) === normalizar(paisActual.name)) {
-      setPuntaje((p) => p + 10);
-      setPaisActual(elegirAlAzar(paises));
+      setPuntaje((p) => p + 10 + timer); 
+      siguientePais();
       return true;
     }
 

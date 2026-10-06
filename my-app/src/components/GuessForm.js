@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { useGame } from "./GameContext";
+import { useGame } from "./GameProvider"; 
 
 export default function GuessForm() {
   const { adivinar } = useGame();
